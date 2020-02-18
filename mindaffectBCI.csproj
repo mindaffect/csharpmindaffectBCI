@@ -1,0 +1,37 @@
+<Project DefaultTargets = "Build"  xmlns="http://schemas.microsoft.com/developer/msbuild/2003" >
+
+    <!-- Set the application name as a property -->
+    <PropertyGroup>
+        <AssemblyName>mindaffectBCI</AssemblyName>
+        <OutputPath>bin</OutputPath>
+        <SourcePath>src</SourcePath>
+        <StartupObject>nl.ma.utopia.Noisetag</StartupObject>
+        <EnableDefaultItems>false</EnableDefaultItems>
+    </PropertyGroup>
+
+    <!-- Specify the inputs by type and file name -->
+    <ItemGroup>
+        <Compile Include = "$(SourcePath)\**\*.cs"/>
+    </ItemGroup>
+    
+    
+    <Target Name="Build">
+        <Message Text="The source files are @(Compile)"/>
+       <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
+       <CSC Sources="@(Compile)" OutputAssembly="$(OutputPath)\$(AssemblyName).dll" MainEntryPoint="$(StartupObject)">
+            <Output TaskParameter = "OutputAssembly" ItemName = "DLLFile" />
+       </CSC>
+       <!-- Run the Visual C# compilation using input files from Compile -->
+       <CSC Sources="@(Compile)" OutputAssembly="$(OutputPath)\$(AssemblyName).exe" MainEntryPoint="$(StartupObject)" EmitDebugInformation="true">
+            <Output TaskParameter = "OutputAssembly" ItemName = "EXEFile" />
+       </CSC>
+       <!-- Log the file name of the output file -->
+       <Message Text="The output file is @(EXEFile)"/>
+    </Target>
+    
+    <Target Name="Clean" >
+       <Delete Files="$(OutputPath)$(AssemblyName).exe" />
+    </Target>
+    
+    <Target Name="Rebuild" DependsOnTargets="Clean;Build" />    
+</Project>
